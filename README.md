@@ -1,7 +1,7 @@
 # ITCC14-Api-Project-Student-Organization-Approval-System
 
 Members
-1. Sai Joy Bacalso
+1. Name
 2. Joshua Argel Detchaca 
 3. Florie Ann Madrono
 4. Mary Angeli Talian
