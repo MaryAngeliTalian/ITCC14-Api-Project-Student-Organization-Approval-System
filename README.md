@@ -1,10 +1,10 @@
 # ITCC14-Api-Project-Student-Organization-Approval-System
 
 Members
-1. 
+1. Name
 2. Joshua Argel Detchaca 
-3. 
-4. 
+3. Name
+4. Name
 
 Milestone 1 (Nov Week 1): Project Proposal & Introduction
 What we'll do:
