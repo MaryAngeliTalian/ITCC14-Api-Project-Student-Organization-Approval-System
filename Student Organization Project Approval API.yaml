@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: Student Organization Project Approval API
+  description: |
+    API for managing student organization project proposals (PP Forms).
+    Supports CRUD operations and status tracking (Approved, Revisions, Disapproved, Comments Added).
+  version: 1.0.0
+  contact:
+    name: Student Activities and Leadership Development (SacDev)
+    email: sacdev@xu.edu.ph
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://sacdev.xu.edu.ph/api/v1
+    description: Production server
+
+tags:
+  - name: Submissions
+    description: Operations related to project proposal submissions
+
+paths:
+  /submissions:
+    post:
+      tags:
+        - Submissions
+      summary: Create a new project proposal submission
+      description: Submit a new PP Form for review by the organization advisor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewSubmission'
+      responses:
+        '201':
+          description: Submission created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+              examples:
+                example-1:
+                  value:
+                    id: "60d21b4667d0d8992e610c85"
+                    title: "Annual Charity Run 2025"
+                    organization: "Rotaract Club"
+                    dateSubmitted: "2025-11-13T08:00:00Z"
+                    status: "Pending"
+                    objectives: "Raise funds for local orphanage"
+                    budget: 15000
+                    venue: "University Oval"
+                    dateOfActivity: "2025-12-10"
+                    comments: []
+        '400':
+          description: Bad request (e.g., missing required fields)
+        '500':
+          description: Internal server error
+
+    get:
+      tags:
+        - Submissions
+      summary: List all project submissions
+      description: Retrieve a list of all PP Form submissions, optionally filtered by status.
+      parameters:
+        - name: status
+          in: query
+          description: Filter submissions by status
+          required: false
+          schema:
+            type: string
+            enum: [Pending, Approved, Revisions, Disapproved, Comments Added]
+      responses:
+        '200':
+          description: A list of submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Submission'
+              examples:
+                example-1:
+                  value:
+                    - id: "60d21b4667d0d8992e610c85"
+                      title: "Annual Charity Run 2025"
+                      status: "Pending"
+                      organization: "Rotaract Club"
+                    - id: "60d21b4667d0d8992e610c86"
+                      title: "Leadership Seminar"
+                      status: "Approved"
+                      organization: "Student Council"
+        '500':
+          description: Internal server error
+
+  /submissions/{id}:
+    patch:
+      tags:
+        - Submissions
+      summary: Update submission status and add comment
+      description: Advisor updates the status of a submission and optionally adds a comment.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the submission to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubmission'
+      responses:
+        '200':
+          description: Submission updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+        '400':
+          description: Invalid status or missing fields
+        '404':
+          description: Submission not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    NewSubmission:
+      type: object
+      required:
+        - title
+        - organization
+        - objectives
+        - budget
+        - venue
+        - dateOfActivity
+      properties:
+        title:
+          type: string
+          example: "Annual Charity Run 2025"
+        organization:
+          type: string
+          example: "Rotaract Club"
+        objectives:
+          type: string
+          example: "Raise funds for local orphanage"
+        budget:
+          type: number
+          format: float
+          example: 15000.0
+        venue:
+          type: string
+          example: "University Oval"
+        dateOfActivity:
+          type: string
+          format: date
+          example: "2025-12-10"
+        description:
+          type: string
+          example: "A 5K fun run open to all students"
+
+    UpdateSubmission:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [Approved, Revisions, Disapproved, Comments Added]
+          example: "Revisions"
+        comment:
+          type: string
+          example: "Please clarify your budget breakdown."
+
+    Submission:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "60d21b4667d0d8992e610c85"
+        title:
+          type: string
+        organization:
+          type: string
+        objectives:
+          type: string
+        budget:
+          type: number
+          format: float
+        venue:
+          type: string
+        dateOfActivity:
+          type: string
+          format: date
+        description:
+          type: string
+        status:
+          type: string
+          enum: [Pending, Approved, Revisions, Disapproved, Comments Added]
+        dateSubmitted:
+          type: string
+          format: date-time
+        comments:
+          type: array
+          items:
+            type: object
+            properties:
+              author:
+                type: string
+                example: "Dr. Reyes"
+              text:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+
+externalDocs:
+  description: Milestone I API Design -  Student Organization Project Approval System
+  url: https://github.com/Pickmecarti/ITCC14-Api-Project-Student-Organization-Approval-System.git
